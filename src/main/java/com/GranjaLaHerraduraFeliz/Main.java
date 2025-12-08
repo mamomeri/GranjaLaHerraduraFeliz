@@ -1,17 +1,30 @@
 package com.GranjaLaHerraduraFeliz;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import com.GranjaLaHerraduraFeliz.controller.AppController;
+import com.GranjaLaHerraduraFeliz.repository.InMemoryAnimalRepository;
+import com.GranjaLaHerraduraFeliz.repository.InMemoryCustomerRepository;
+import com.GranjaLaHerraduraFeliz.repository.InMemoryRentalRepository;
+import com.GranjaLaHerraduraFeliz.service.AnimalService;
+import com.GranjaLaHerraduraFeliz.service.CustomerService;
+import com.GranjaLaHerraduraFeliz.service.RentalService;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+        // Repositorios en memoria
+        var animalRepository = new InMemoryAnimalRepository();
+        var customerRepository = new InMemoryCustomerRepository();
+        var rentalRepository = new InMemoryRentalRepository();
+
+        // Servicios
+        var animalService = new AnimalService(animalRepository);
+        var customerService = new CustomerService(customerRepository);
+        var rentalService = new RentalService(animalRepository, customerRepository, rentalRepository);
+
+        // Controlador
+        var appController = new AppController(animalService, customerService, rentalService);
+
+        // Ejecutar menú
+        appController.run();
     }
 }

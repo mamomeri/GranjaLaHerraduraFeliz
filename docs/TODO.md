@@ -20,64 +20,64 @@ Las tareas están agrupadas por etapas, en orden recomendado.
 
 ## Etapa 1 – Modelo de dominio (model)
 
-- [ ] Crear paquete `model`.
-- [ ] Implementar enum `AnimalType` (HORSE, DONKEY, PIG).
-- [ ] Implementar enum `AnimalStatus` (AVAILABLE, RENTED).
-- [ ] Implementar enum `RentalType` (SHORT_RIDE, HOURLY).
-- [ ] Implementar clase `Animal`:
-  - [ ] Atributos: `id`, `name`, `AnimalType type`, `AnimalStatus status`.
-  - [ ] Constructor(es).
-  - [ ] Getters/Setters.
-  - [ ] `toString()`.
-- [ ] Implementar clase `Customer`:
-  - [ ] Atributos: `id`, `fullName`.
-  - [ ] Constructor(es).
-  - [ ] Getters/Setters.
-  - [ ] `toString()`.
-- [ ] Implementar clase `Rental`:
-  - [ ] Atributos: `id`, `Animal animal`, `Customer customer`, `startTime`, `endTime`, `RentalType rentalType`.
-  - [ ] Constructor(es).
-  - [ ] Getters/Setters.
-  - [ ] `toString()`.
+- [x] Crear paquete `model`.
+- [x] Implementar enum `AnimalType` (HORSE, DONKEY, PIG).
+- [x] Implementar enum `AnimalStatus` (AVAILABLE, RENTED).
+- [x] Implementar enum `RentalType` (SHORT_RIDE, HOURLY).
+- [x] Implementar clase `Animal`:
+  - [x] Atributos: `id`, `name`, `AnimalType type`, `AnimalStatus status`.
+  - [x] Constructor(es).
+  - [x] Getters/Setters.
+  - [x] `toString()`.
+- [x] Implementar clase `Customer`:
+  - [x] Atributos: `id`, `fullName`.
+  - [x] Constructor(es).
+  - [x] Getters/Setters.
+  - [x] `toString()`.
+- [x] Implementar clase `Rental`:
+  - [x] Atributos: `id`, `Animal animal`, `Customer customer`, `startTime`, `endTime`, `RentalType rentalType`.
+  - [x] Constructor(es).
+  - [x] Getters/Setters.
+  - [x] `toString()`.
 
 ---
 
 ## Etapa 2 – Excepciones personalizadas (exception)
 
-- [ ] Crear paquete `exception`.
-- [ ] Implementar `AnimalNotAvailableException extends RuntimeException`.
-- [ ] (Opcional) Implementar `RentalNotFoundException`.
+- [x] Crear paquete `exception`.
+- [x] Implementar `AnimalNotAvailableException extends RuntimeException`.
+- [x] (Opcional) Implementar `RentalNotFoundException`.
 
 ---
 
 ## Etapa 3 – Repositorios en memoria (repository)
 
-- [ ] Crear paquete `repository`.
+- [x] Crear paquete `repository`.
 
 ### Interfaces
 
-- [ ] Crear interfaz `AnimalRepository`:
-  - [ ] `Animal save(Animal animal);`
-  - [ ] `Animal findById(String id);`
-  - [ ] `List<Animal> findAll();`
-  - [ ] `List<Animal> findByStatus(AnimalStatus status);`
-- [ ] Crear interfaz `CustomerRepository`:
-  - [ ] `Customer save(Customer customer);`
-  - [ ] `Customer findById(String id);`
-  - [ ] `List<Customer> findAll();`
-- [ ] Crear interfaz `RentalRepository`:
-  - [ ] `Rental save(Rental rental);`
-  - [ ] `Rental findById(String id);`
-  - [ ] `List<Rental> findAll();`
-  - [ ] `List<Rental> findActiveByAnimal(Animal animal);`
+- [x] Crear interfaz `AnimalRepository`:
+  - [x] `Animal save(Animal animal);`
+  - [x] `Animal findById(int id);`
+  - [x] `List<Animal> findAll();`
+  - [x] `List<Animal> findByStatus(AnimalStatus status);`
+- [x] Crear interfaz `CustomerRepository`:
+  - [x] `Customer save(Customer customer);`
+  - [x] `Customer findById(int id);`
+  - [x] `List<Customer> findAll();`
+- [x] Crear interfaz `RentalRepository`:
+  - [x] `Rental save(Rental rental);`
+  - [x] `Rental findById(int id);`
+  - [x] `List<Rental> findAll();`
+  - [x] `List<Rental> findActiveByAnimal(Animal animal);`
 
 ### Implementaciones en memoria
 
-- [ ] Implementar `InMemoryAnimalRepository` usando `ArrayList`:
-  - [ ] Lista interna de `Animal`.
-  - [ ] Implementar métodos de la interfaz.
-- [ ] Implementar `InMemoryCustomerRepository` usando `ArrayList`.
-- [ ] Implementar `InMemoryRentalRepository` usando `ArrayList`.
+- [x] Implementar `InMemoryAnimalRepository` usando `ArrayList`:
+  - [x] Lista interna de `Animal`.
+  - [x] Implementar métodos de la interfaz.
+- [x] Implementar `InMemoryCustomerRepository` usando `ArrayList`.
+- [x] Implementar `InMemoryRentalRepository` usando `ArrayList`.
 
 *(Opcional Etapa 3.5)*  
 - [ ] Crear una segunda implementación usando `HashMap` y comparar complejidad.
@@ -86,57 +86,57 @@ Las tareas están agrupadas por etapas, en orden recomendado.
 
 ## Etapa 4 – Servicios de negocio (service)
 
-- [ ] Crear paquete `service`.
+- [x] Crear paquete `service`.
 
 ### `AnimalService`
-- [ ] Recibir `AnimalRepository` por constructor.
-- [ ] Métodos:
-  - [ ] `registerAnimal(...)` – crear animal con estado `AVAILABLE`.
-  - [ ] `listAllAnimals()`.
-  - [ ] `listAvailableAnimals()`.
+- [x] Recibir `AnimalRepository` por constructor.
+- [x] Métodos:
+  - [x] `registerAnimal(...)` – crear animal con estado `AVAILABLE`.
+  - [x] `listAllAnimals()`.
+  - [x] `listAvailableAnimals()`.
 
 ### `CustomerService`
-- [ ] Recibir `CustomerRepository` por constructor.
-- [ ] Métodos:
-  - [ ] `registerCustomer(...)`.
-  - [ ] `listAllCustomers()`.
+- [x] Recibir `CustomerRepository` por constructor.
+- [x] Métodos:
+  - [x] `registerCustomer(...)`.
+  - [x] `listAllCustomers()`.
 
 ### `RentalService`
-- [ ] Recibir `AnimalRepository` y `RentalRepository` por constructor.
-- [ ] Métodos:
-  - [ ] `startRental(animalId, customerId, rentalType)`:
-    - [ ] Validar existencia de animal y cliente.
-    - [ ] Validar `AnimalStatus.AVAILABLE`.
-    - [ ] Crear `Rental` con `startTime = now`.
-    - [ ] Cambiar estado de animal a `RENTED`.
-    - [ ] Guardar cambios en repositorios.
-  - [ ] `finishRental(rentalId)`:
-    - [ ] Buscar rental.
-    - [ ] Registrar `endTime = now`.
-    - [ ] Cambiar estado del animal a `AVAILABLE`.
-  - [ ] `listAllRentals()`.
+- [x] Recibir `AnimalRepository` y `RentalRepository` por constructor.
+- [x] Métodos:
+  - [x] `startRental(animalId, customerId, rentalType)`:
+    - [x] Validar existencia de animal y cliente.
+    - [x] Validar `AnimalStatus.AVAILABLE`.
+    - [x] Crear `Rental` con `startTime = now` esto se hace en el constructor ya implementado.
+    - [x] Cambiar estado de animal a `RENTED`.
+    - [x] Guardar cambios en repositorios.
+  - [x] `finishRental(rentalId)`:
+    - [x] Buscar rental.
+    - [x] Registrar `endTime = now`.
+    - [x] Cambiar estado del animal a `AVAILABLE`.
+  - [x] `listAllRentals()`.
 
 ---
 
 ## Etapa 5 – Controlador de consola (controller)
 
-- [ ] Crear paquete `controller`.
-- [ ] Implementar clase `AppController`:
-  - [ ] Recibir servicios por constructor.
-  - [ ] Implementar menú de texto:
-    - [ ] Opción 1: Registrar animal.
-    - [ ] Opción 2: Registrar cliente.
-    - [ ] Opción 3: Crear alquiler.
-    - [ ] Opción 4: Finalizar alquiler.
-    - [ ] Opción 5: Listar animales disponibles.
-    - [ ] Opción 0: Salir.
-  - [ ] Manejar entradas de usuario con `Scanner`.
+- [x] Crear paquete `controller`.
+- [x] Implementar clase `AppController`:
+  - [x] Recibir servicios por constructor.
+  - [x] Implementar menú de texto:
+    - [x] Opción 1: Registrar animal.
+    - [x] Opción 2: Registrar cliente.
+    - [x] Opción 3: Crear alquiler.
+    - [x] Opción 4: Finalizar alquiler.
+    - [x] Opción 5: Listar animales disponibles.
+    - [x] Opción 0: Salir.
+  - [x] Manejar entradas de usuario con `Scanner`.
 
-- [ ] Crear clase `Main` en paquete raíz:
-  - [ ] Instanciar repositorios en memoria.
-  - [ ] Instanciar servicios.
-  - [ ] Instanciar `AppController`.
-  - [ ] Llamar a `controller.run()`.
+- [x] Crear clase `Main` en paquete raíz:
+  - [x] Instanciar repositorios en memoria.
+  - [x] Instanciar servicios.
+  - [x] Instanciar `AppController`.
+  - [x] Llamar a `controller.run()`.
 
 ---
 

@@ -113,7 +113,7 @@ El sistema tiene como meta:
 src/
   main/
     java/
-      com/empresa/granja/
+      com/GranjaLaHerraduraFeliz/
         controller/
         service/
         repository/
