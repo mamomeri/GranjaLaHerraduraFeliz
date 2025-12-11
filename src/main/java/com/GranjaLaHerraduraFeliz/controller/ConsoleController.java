@@ -10,22 +10,57 @@ import com.GranjaLaHerraduraFeliz.service.RentalService;
 
 import java.util.Scanner;
 
-public class AppController {
+/**
+ * Controlador encargado de manejar la interacción del usuario
+ * mediante la interfaz de consola (CLI).
+ * <p>
+ * Este controlador:
+ * <ul>
+ *     <li>Muestra menús de opciones.</li>
+ *     <li>Solicita datos por consola.</li>
+ *     <li>Invoca a los servicios de negocio.</li>
+ *     <li>Maneja errores y excepciones del flujo.</li>
+ * </ul>
+ *
+ * Su objetivo es únicamente gestionar la experiencia por la terminal.
+ * La lógica de negocio está encapsulada en los servicios.
+ *
+ * <p>
+ * En versiones futuras del sistema (por ejemplo, una interfaz gráfica con JavaFX),
+ * este controlador podrá convivir junto a otros controladores sin necesidad
+ * de ser eliminado.
+ * </p>
+ *
+ * @author Marcos
+ * @since 1.0 (versión consola)
+ */
+public class ConsoleController {
 
     private final AnimalService animalService;
     private final CustomerService customerService;
     private final RentalService rentalService;
     private final Scanner scanner;
 
-    public AppController(AnimalService animalService,
-                         CustomerService customerService,
-                         RentalService rentalService) {
+    /**
+     * Crea un controlador para la interfaz de consola.
+     *
+     * @param animalService Servicio de animales.
+     * @param customerService Servicio de clientes.
+     * @param rentalService Servicio de alquileres.
+     */
+    public ConsoleController(AnimalService animalService,
+                             CustomerService customerService,
+                             RentalService rentalService) {
         this.animalService = animalService;
         this.customerService = customerService;
         this.rentalService = rentalService;
         this.scanner = new Scanner(System.in);
     }
 
+    /**
+     * Inicia el ciclo principal del programa,
+     * mostrando opciones y ejecutando operaciones hasta que el usuario decida salir.
+     */
     public void run() {
         boolean running = true;
 
@@ -50,6 +85,7 @@ public class AppController {
         }
     }
 
+    /** Imprime el menú principal. */
     private void printMenu() {
         System.out.println("===== Granja La Herradura Feliz =====");
         System.out.println("1. Registrar animal");
@@ -60,6 +96,7 @@ public class AppController {
         System.out.println("0. Salir");
     }
 
+    /** Lee un entero desde la consola con validación básica. */
     private int readInt(String message) {
         System.out.print(message);
         while (!scanner.hasNextInt()) {
@@ -71,12 +108,13 @@ public class AppController {
         return value;
     }
 
+    /** Lee una línea completa desde la consola. */
     private String readLine(String message) {
         System.out.print(message);
         return scanner.nextLine();
     }
 
-    // 1) Registrar animal
+    /** Lógica del menú: registrar animal. */
     private void registerAnimal() {
         String name = readLine("Nombre del animal: ");
 
@@ -100,15 +138,14 @@ public class AppController {
         System.out.println("Animal registrado: " + animal);
     }
 
-    // 2) Registrar cliente
+    /** Lógica del menú: registrar cliente. */
     private void registerCustomer() {
         String fullName = readLine("Nombre completo del cliente: ");
-
         var customer = customerService.registerCustomer(fullName);
         System.out.println("Cliente registrado: " + customer);
     }
 
-    // 3) Crear alquiler
+    /** Lógica del menú: iniciar alquiler. */
     private void startRental() {
         int animalId = readInt("ID del animal: ");
         int customerId = readInt("ID del cliente: ");
@@ -135,16 +172,14 @@ public class AppController {
             System.out.println("⚠ El animal no está disponible: " + e.getMessage());
 
         } catch (IllegalArgumentException e) {
-            // Animal o cliente no encontrados, o datos inválidos
             System.out.println("⚠ Error en los datos: " + e.getMessage());
 
         } catch (Exception e) {
-            // Cualquier otra cosa inesperada
             System.out.println("⚠ Error inesperado al crear alquiler: " + e.getMessage());
         }
     }
 
-    // 4) Finalizar alquiler
+    /** Lógica del menú: finalizar alquiler. */
     private void finishRental() {
         int rentalId = readInt("ID del alquiler: ");
 
@@ -160,7 +195,7 @@ public class AppController {
         }
     }
 
-    // 5) Listar animales disponibles
+    /** Lógica del menú: listar animales disponibles. */
     private void listAvailableAnimals() {
         var animals = animalService.listAvailableAnimals();
         if (animals.isEmpty()) {

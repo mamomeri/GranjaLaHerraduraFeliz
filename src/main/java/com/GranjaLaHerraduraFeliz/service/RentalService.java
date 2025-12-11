@@ -14,12 +14,36 @@ import com.GranjaLaHerraduraFeliz.repository.RentalRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Servicio encargado de gestionar la lógica de negocio relacionada con los alquileres.
+ * <p>
+ * Funcionalidades principales:
+ * <ul>
+ *     <li>Iniciar un alquiler validando animal, cliente y disponibilidad.</li>
+ *     <li>Finalizar un alquiler registrando la fecha de devolución.</li>
+ *     <li>Actualizar el estado del animal según corresponda.</li>
+ *     <li>Listar los alquileres registrados.</li>
+ * </ul>
+ *
+ * Este servicio actúa como intermediario entre los controladores y los repositorios,
+ * encapsulando toda la lógica relacionada con el proceso de alquiler.
+ *
+ * @author Marcos
+ * @since 1.0 (versión consola)
+ */
 public class RentalService {
 
     private final AnimalRepository animalRepository;
     private final CustomerRepository customerRepository;
     private final RentalRepository rentalRepository;
 
+    /**
+     * Crea un servicio de alquiler inyectando los repositorios necesarios.
+     *
+     * @param animalRepository   Repositorio para gestión de animales.
+     * @param customerRepository Repositorio para gestión de clientes.
+     * @param rentalRepository   Repositorio para gestión de alquileres.
+     */
     public RentalService(AnimalRepository animalRepository,
                          CustomerRepository customerRepository,
                          RentalRepository rentalRepository) {
@@ -29,42 +53,55 @@ public class RentalService {
     }
 
     /**
-     * Inicia un alquiler:
-     * - Valida animal y cliente
-     * - Verifica disponibilidad (AVAILABLE)
-     * - Crea Rental (startTime viene del constructor por defecto)
-     * - Cambia estado del animal a RENTED
-     * - Guarda cambios
+     * Inicia un nuevo alquiler validando animal, cliente y disponibilidad.
+     * <p>
+     * Reglas del negocio:
+     * <ul>
+     *     <li>El animal debe existir.</li>
+     *     <li>El animal debe estar en estado {@code AVAILABLE}.</li>
+     *     <li>El cliente debe existir.</li>
+     *     <li>El alquiler inicia con {@code startTime = now} y {@code endTime = null}.</li>
+     *     <li>El animal cambia su estado a {@code RENTED}.</li>
+     * </ul>
+     *
+     * @param animalId   ID del animal a alquilar.
+     * @param customerId ID del cliente que realiza el alquiler.
+     * @param rentalType Tipo de alquiler (SHORT_RIDE, HOURLY, etc.).
+     * @return El nuevo alquiler registrado.
+     *
+     * @throws IllegalArgumentException      Si el animal o el cliente no existen.
+     * @throws AnimalNotAvailableException   Si el animal no está disponible.
      */
     public Rental startRental(int animalId, int customerId, RentalType rentalType) {
 
+        // Validar existencia del animal
         Animal animal = animalRepository.findById(animalId);
         if (animal == null) {
-            // Si quieres, más adelante puedes crear una AnimalNotFoundException
             throw new IllegalArgumentException("Animal no encontrado con id: " + animalId);
         }
 
+        // Validar disponibilidad
         if (animal.getStatus() != AnimalStatus.AVAILABLE) {
-            // 👉 aquí usamos tu excepción personalizada
             throw new AnimalNotAvailableException(
                     "El animal con id " + animalId + " no está disponible para alquiler."
             );
         }
 
+        // Validar existencia del cliente
         Customer customer = customerRepository.findById(customerId);
         if (customer == null) {
             throw new IllegalArgumentException("Cliente no encontrado con id: " + customerId);
         }
 
-        // Crear el alquiler según tu clase actual
-        Rental rental = new Rental(); // constructor ya pone startTime = now y endTime = null
+        // Crear alquiler (startTime y endTime se manejan desde el constructor)
+        Rental rental = new Rental();
         rental.setAnimal(animal);
         rental.setCustomer(customer);
         rental.setRentalType(rentalType);
 
         rental = rentalRepository.save(rental);
 
-        // Actualizar estado del animal
+        // Cambiar estado del animal
         animal.setStatus(AnimalStatus.RENTED);
         animalRepository.save(animal);
 
@@ -72,27 +109,35 @@ public class RentalService {
     }
 
     /**
-     * Finaliza un alquiler:
-     * - Busca el rental
-     * - Marca endTime = now
-     * - Cambia el animal a AVAILABLE
-     * - Guarda cambios
+     * Finaliza un alquiler existente.
+     * <p>
+     * Reglas del negocio:
+     * <ul>
+     *     <li>El alquiler debe existir.</li>
+     *     <li>Si ya estaba finalizado, se devuelve tal cual.</li>
+     *     <li>Se registra {@code endTime = now}.</li>
+     *     <li>El animal asociado vuelve a estado {@code AVAILABLE}.</li>
+     * </ul>
+     *
+     * @param rentalId ID del alquiler a finalizar.
+     * @return El alquiler actualizado.
+     *
+     * @throws RentalNotFoundException Si el alquiler no existe.
      */
     public Rental finishRental(int rentalId) {
         Rental rental = rentalRepository.findById(rentalId);
         if (rental == null) {
-            // 👉 aquí usamos tu RentalNotFoundException
             throw new RentalNotFoundException("Alquiler no encontrado con id: " + rentalId);
         }
 
+        // Si ya estaba finalizado
         if (rental.getEndTime() != null) {
-            // Ya estaba finalizado
             return rental;
         }
 
         rental.setEndTime(LocalDateTime.now());
 
-        // Restablecer animal a AVAILABLE
+        // Restablecer estado del animal
         Animal animal = rental.getAnimal();
         animal.setStatus(AnimalStatus.AVAILABLE);
         animalRepository.save(animal);
@@ -102,6 +147,11 @@ public class RentalService {
         return rental;
     }
 
+    /**
+     * Obtiene un listado completo de alquileres registrados.
+     *
+     * @return Lista de {@link Rental}.
+     */
     public List<Rental> listAllRentals() {
         return rentalRepository.findAll();
     }
