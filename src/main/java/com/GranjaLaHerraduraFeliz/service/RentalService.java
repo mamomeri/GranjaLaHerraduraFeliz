@@ -10,6 +10,8 @@ import com.GranjaLaHerraduraFeliz.model.RentalType;
 import com.GranjaLaHerraduraFeliz.repository.AnimalRepository;
 import com.GranjaLaHerraduraFeliz.repository.CustomerRepository;
 import com.GranjaLaHerraduraFeliz.repository.RentalRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +34,9 @@ import java.util.List;
  * @since 1.0 (versión consola)
  */
 public class RentalService {
+
+    // Logger para trazar el comportamiento del servicio en tiempo de ejecución.
+    private static final Logger log = LoggerFactory.getLogger(RentalService.class);
 
     private final AnimalRepository animalRepository;
     private final CustomerRepository customerRepository;
@@ -74,14 +79,23 @@ public class RentalService {
      */
     public Rental startRental(int animalId, int customerId, RentalType rentalType) {
 
+        // Log de inicio de operación con los parámetros clave del negocio.
+        log.info("service=RentalService event=startRentalInit animalId={} customerId={} rentalType={}",
+                animalId, customerId, rentalType);
+
         // Validar existencia del animal
         Animal animal = animalRepository.findById(animalId);
         if (animal == null) {
+            // Log de validación fallida: el animal no existe.
+            log.warn("service=RentalService event=animalNotFound animalId={}", animalId);
             throw new IllegalArgumentException("Animal no encontrado con id: " + animalId);
         }
 
         // Validar disponibilidad
         if (animal.getStatus() != AnimalStatus.AVAILABLE) {
+            // Log de validación fallida: el animal existe pero no está disponible.
+            log.warn("service=RentalService event=animalNotAvailable animalId={} status={}",
+                    animalId, animal.getStatus());
             throw new AnimalNotAvailableException(
                     "El animal con id " + animalId + " no está disponible para alquiler."
             );
@@ -90,6 +104,8 @@ public class RentalService {
         // Validar existencia del cliente
         Customer customer = customerRepository.findById(customerId);
         if (customer == null) {
+            // Log de validación fallida: cliente inexistente.
+            log.warn("service=RentalService event=customerNotFound customerId={}", customerId);
             throw new IllegalArgumentException("Cliente no encontrado con id: " + customerId);
         }
 
@@ -101,9 +117,16 @@ public class RentalService {
 
         rental = rentalRepository.save(rental);
 
+        // Log de creación exitosa del alquiler.
+        log.info("service=RentalService event=rentalCreated rentalId={} animalId={} customerId={}",
+                rental.getId(), animalId, customerId);
+
         // Cambiar estado del animal
         animal.setStatus(AnimalStatus.RENTED);
         animalRepository.save(animal);
+
+        // Log de cambio de estado del animal.
+        log.info("service=RentalService event=animalStatusUpdated animalId={} status=RENTED", animalId);
 
         return rental;
     }
@@ -125,13 +148,21 @@ public class RentalService {
      * @throws RentalNotFoundException Si el alquiler no existe.
      */
     public Rental finishRental(int rentalId) {
+
+        // Log de inicio de finalización de alquiler.
+        log.info("service=RentalService event=finishRentalInit rentalId={}", rentalId);
+
         Rental rental = rentalRepository.findById(rentalId);
         if (rental == null) {
+            // Log de alquiler inexistente.
+            log.warn("service=RentalService event=rentalNotFound rentalId={}", rentalId);
             throw new RentalNotFoundException("Alquiler no encontrado con id: " + rentalId);
         }
 
         // Si ya estaba finalizado
         if (rental.getEndTime() != null) {
+            // Log de intento de finalizar un alquiler ya finalizado.
+            log.info("service=RentalService event=rentalAlreadyFinished rentalId={}", rentalId);
             return rental;
         }
 
@@ -144,6 +175,10 @@ public class RentalService {
 
         rental = rentalRepository.save(rental);
 
+        // Log de finalización correcta de alquiler y actualización del animal.
+        log.info("service=RentalService event=rentalFinished rentalId={} endTime={} animalId={} animalStatus=AVAILABLE",
+                rentalId, rental.getEndTime(), animal.getId());
+
         return rental;
     }
 
@@ -153,6 +188,8 @@ public class RentalService {
      * @return Lista de {@link Rental}.
      */
     public List<Rental> listAllRentals() {
+        // Log de consulta de todos los alquileres.
+        log.info("service=RentalService event=listAllRentals");
         return rentalRepository.findAll();
     }
 }

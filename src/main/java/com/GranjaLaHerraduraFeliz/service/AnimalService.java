@@ -5,6 +5,9 @@ import com.GranjaLaHerraduraFeliz.model.AnimalStatus;
 import com.GranjaLaHerraduraFeliz.model.AnimalType;
 import com.GranjaLaHerraduraFeliz.repository.AnimalRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 /**
@@ -25,6 +28,9 @@ import java.util.List;
  */
 public class AnimalService {
 
+    // Logger para registrar eventos de negocio y diagnósticos
+    private static final Logger log = LoggerFactory.getLogger(AnimalService.class);
+
     private final AnimalRepository animalRepository;
 
     /**
@@ -34,6 +40,9 @@ public class AnimalService {
      */
     public AnimalService(AnimalRepository animalRepository) {
         this.animalRepository = animalRepository;
+
+        log.info("AnimalService inicializado.");
+        // Comentario: informa en despliegues / contenedores que el servicio está operativo.
     }
 
     /**
@@ -50,12 +59,22 @@ public class AnimalService {
      * @return Animal registrado y persistido.
      */
     public Animal registerAnimal(String name, AnimalType type) {
+
+        log.debug("Registrando animal. Nombre='{}', Tipo={}", name, type);
+        // Comentario: DEBUG → seguimiento detallado del flujo para depurar.
+
         Animal animal = new Animal();
         animal.setName(name);
         animal.setType(type);
         animal.setStatus(AnimalStatus.AVAILABLE);
 
-        return animalRepository.save(animal);
+        Animal saved = animalRepository.save(animal);
+
+        log.info("Animal registrado: ID={}, Nombre='{}', Tipo={}, Estado={}",
+                saved.getId(), saved.getName(), saved.getType(), saved.getStatus());
+        // Comentario: INFO → registra un evento importante del negocio.
+
+        return saved;
     }
 
     /**
@@ -64,7 +83,16 @@ public class AnimalService {
      * @return Lista completa de {@link Animal}.
      */
     public List<Animal> listAllAnimals() {
-        return animalRepository.findAll();
+
+        log.debug("Consultando la lista completa de animales.");
+        // Comentario: DEBUG → operación de lectura que puede ser monitoreada.
+
+        List<Animal> animals = animalRepository.findAll();
+
+        log.info("Consulta completada. Total de animales registrados: {}", animals.size());
+        // Comentario: INFO → útil para auditoría y monitoreo del sistema.
+
+        return animals;
     }
 
     /**
@@ -73,6 +101,15 @@ public class AnimalService {
      * @return Lista de animales disponibles.
      */
     public List<Animal> listAvailableAnimals() {
-        return animalRepository.findByStatus(AnimalStatus.AVAILABLE);
+
+        log.debug("Consultando animales disponibles (estado AVAILABLE).");
+        // Comentario: DEBUG → detalla consultas filtradas útiles para diagnósticos.
+
+        List<Animal> available = animalRepository.findByStatus(AnimalStatus.AVAILABLE);
+
+        log.info("Animales disponibles encontrados: {}", available.size());
+        // Comentario: INFO → buen indicador de capacidad disponible del sistema.
+
+        return available;
     }
 }
